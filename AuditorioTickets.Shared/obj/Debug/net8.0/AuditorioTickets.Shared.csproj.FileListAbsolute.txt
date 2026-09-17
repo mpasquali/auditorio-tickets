@@ -1,0 +1,11 @@
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/bin/Debug/net8.0/AuditorioTickets.Shared.deps.json
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/bin/Debug/net8.0/AuditorioTickets.Shared.dll
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/bin/Debug/net8.0/AuditorioTickets.Shared.pdb
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/AuditorioTickets.Shared.GeneratedMSBuildEditorConfig.editorconfig
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/AuditorioTickets.Shared.AssemblyInfoInputs.cache
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/AuditorioTickets.Shared.AssemblyInfo.cs
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/AuditorioTickets.Shared.csproj.CoreCompileInputs.cache
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/AuditorioTickets.Shared.dll
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/refint/AuditorioTickets.Shared.dll
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/AuditorioTickets.Shared.pdb
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/ref/AuditorioTickets.Shared.dll

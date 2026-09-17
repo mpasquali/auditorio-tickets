@@ -1,0 +1,164 @@
+@page "/admin/crear-evento"
+@attribute [Authorize(Roles = "Admin")]
+@inject EventoApiService EventoService
+@inject NavigationManager Navigation
+
+<PageTitle>Crear evento - UNAJ</PageTitle>
+
+<div class="container-fluid py-2">
+    <!-- Encabezado y botón de volver -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0 text-dark">Crear nuevo evento</h2>
+        <a href="/admin" class="btn btn-outline-secondary btn-sm shadow-sm rounded-pill px-4">
+            ← Volver al dashboard
+        </a>
+    </div>
+
+    <!-- Tarjeta del formulario -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+            <EditForm Model="_evento" OnValidSubmit="GuardarEvento">
+                <DataAnnotationsValidator />
+
+                <div class="row g-4">
+                    <!-- Título -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Título del evento</label>
+                        <InputText @bind-Value="_evento.Titulo" class="form-control form-control-lg bg-light border-0" placeholder="Ej: Acto de Colación" />
+                    </div>
+
+                    <!-- Lugar -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Lugar</label>
+                        <InputText @bind-Value="_evento.Lugar" class="form-control form-control-lg bg-light border-0" placeholder="Ej: Auditorio Sede Central" />
+                    </div>
+
+                    <!-- Descripción (Ocupa toda la fila) -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">Descripción</label>
+                        <InputTextArea @bind-Value="_evento.Descripcion" class="form-control form-control-lg bg-light border-0" rows="3" placeholder="Detalles del evento..." />
+                    </div>
+
+                    <!-- Fecha y Hora -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold text-secondary">Fecha y hora</label>
+                        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="_evento.FechaEvento" class="form-control form-control-lg bg-light border-0" />
+                    </div>
+
+                    <!-- Capacidad -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold text-secondary">Capacidad máxima</label>
+                        <InputNumber @bind-Value="_evento.CapacidadMaxima" class="form-control form-control-lg bg-light border-0" />
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold text-secondary">Precio (ARS)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 fw-bold">$</span>
+                            <InputNumber @bind-Value="_evento.Precio" class="form-control form-control-lg bg-light border-0" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensajes de Error / Éxito -->
+                <div class="mt-4">
+                    @if (!string.IsNullOrEmpty(_error))
+                    {
+                        <div class="alert alert-danger border-0 shadow-sm rounded-3">
+                            @_error
+                        </div>
+                    }
+
+                    @if (_exito)
+                    {
+                        <div class="alert alert-success border-0 shadow-sm rounded-3 bg-success text-white">
+                            ✅ Evento creado correctamente.
+                        </div>
+                    }
+                </div>
+
+                <hr class="my-4 text-muted opacity-25">
+
+                <!-- Botón Guardar -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm btn-guardar" disabled="@_guardando">
+                        @if (_guardando)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>Guardando...</span>
+                        }
+                        else
+                        {
+                            <span>Crear evento</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Arranca con una fecha razonable por defecto para no obligar al admin a tocarla siempre.
+    private CrearEventoDto _evento = new() { FechaEvento = DateTime.Now.AddDays(7) };
+
+    private bool _guardando;
+    private bool _exito;
+    private string? _error;
+
+    private async Task GuardarEvento()
+    {
+        _guardando = true;
+        _error = null;
+        _exito = false;
+
+        // Validación mínima del lado cliente antes de pegarle a la API.
+        if (_evento.CapacidadMaxima <= 0)
+        {
+            _error = "La capacidad máxima debe ser mayor a cero.";
+            _guardando = false;
+            return;
+        }
+
+        if (_evento.FechaEvento <= DateTime.Now)
+        {
+            _error = "La fecha del evento debe ser futura.";
+            _guardando = false;
+            return;
+        }
+
+        var (creado, error) = await EventoService.CrearEventoAsync(_evento);
+
+        if (!creado)
+        {
+            _error = error;
+        }
+        else
+        {
+            _exito = true;
+            // Reseteamos el formulario para cargar otro evento sin salir de la página.
+            _evento = new CrearEventoDto { FechaEvento = DateTime.Now.AddDays(7) };
+        }
+
+        _guardando = false;
+    }
+}
+
+<style>
+    /* Estilo institucional para el botón principal */
+    .btn-guardar {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-guardar:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3) !important;
+    }
+    
+    /* Pequeño ajuste para que los inputs no tengan el borde negro duro de HTML puro */
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(42, 82, 152, 0.25);
+    }
+</style>

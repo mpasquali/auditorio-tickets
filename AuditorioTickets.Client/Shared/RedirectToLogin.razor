@@ -1,0 +1,9 @@
+@inject NavigationManager Navigation
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Manda al login con un returnUrl, para poder volver a donde el usuario quería ir.
+        Navigation.NavigateTo($"/admin/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+    }
+}

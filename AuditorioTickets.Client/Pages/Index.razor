@@ -1,0 +1,81 @@
+@page "/"
+@inject EventoApiService EventoService
+
+<PageTitle>Entradas - Auditorio</PageTitle>
+
+<!-- Título y barra de búsqueda -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+    <h2 class="fw-bold mb-0 text-dark">Próximos eventos</h2>
+    
+    <div class="input-group shadow-sm rounded-pill overflow-hidden bg-white" style="max-width: 400px; border: 1px solid #dee2e6;">
+        <span class="input-group-text bg-transparent border-0 text-muted ps-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+        </span>
+        <input type="text" 
+               class="form-control border-0 py-2 shadow-none" 
+               placeholder="Buscar evento por título..." 
+               @bind="_textoBusqueda" 
+               @bind:event="oninput">
+    </div>
+</div>
+
+@if (_cargando)
+{
+    <p>Cargando eventos...</p>
+}
+else if (_eventos.Count == 0)
+{
+    <p>No hay eventos disponibles por el momento.</p>
+}
+else if (!EventosFiltrados.Any())
+{
+    <!-- Mensaje si la búsqueda no arroja resultados -->
+    <p class="text-muted mt-4">No se encontraron eventos que coincidan con "<strong>@_textoBusqueda</strong>".</p>
+}
+else
+{
+    <div class="grid-eventos">
+        @foreach (var evento in EventosFiltrados)
+        {
+            <div class="tarjeta-evento">
+                <h3>@evento.Titulo</h3>
+                <p>@evento.Descripcion</p>
+                <p><strong>Lugar:</strong> @evento.Lugar</p>
+                <p><strong>Fecha:</strong> @evento.FechaEvento.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+                <p><strong>Precio:</strong> $@evento.Precio.ToString("N2")</p>
+                <p><strong>Cupo disponible:</strong> @evento.CupoDisponible / @evento.CapacidadMaxima</p>
+
+                @if (evento.CupoDisponible <= 0)
+                {
+                    <span class="agotado">Agotado</span>
+                }
+                else
+                {
+                    <a href="@($"/evento/{evento.Id}")" class="btn-comprar">Ver más</a>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<EventoDto> _eventos = new();
+    private bool _cargando = true;
+
+    // Variable que guarda lo que se escribe en el input
+    private string _textoBusqueda = "";
+
+    // Propiedad calculada que devuelve la lista filtrada en tiempo real
+    private IEnumerable<EventoDto> EventosFiltrados => 
+        string.IsNullOrWhiteSpace(_textoBusqueda) 
+            ? _eventos 
+            : _eventos.Where(e => e.Titulo.Contains(_textoBusqueda, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        _eventos = await EventoService.ObtenerEventosAsync();
+        _cargando = false;
+    }
+}

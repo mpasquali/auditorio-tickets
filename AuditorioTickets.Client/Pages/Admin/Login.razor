@@ -1,0 +1,160 @@
+@page "/admin/login"
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Ingreso administrador</PageTitle>
+
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+    }
+
+    .login-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .login-header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    .login-header p {
+        margin-top: 8px;
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-group label {
+        margin-bottom: 8px;
+        color: #34495e;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .input-group input {
+        padding: 12px 16px;
+        border: 1px solid #dcdde1;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        outline: none;
+        background-color: #fcfcfc;
+        width: 100%;
+        box-sizing: border-box; /* Esto evita que el input se desborde */
+    }
+
+    .input-group input:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        background-color: #ffffff;
+    }
+
+    .btn-ingresar {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        background-color: #2980b9; 
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    .btn-ingresar:hover {
+        background-color: #2471a3;
+    }
+
+    .btn-ingresar:active {
+        transform: scale(0.98);
+    }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 14px;
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 500;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Panel de Administración</h2>
+            <p>Ingresá tus credenciales para gestionar el auditorio</p>
+        </div>
+        
+        <EditForm Model="_form" OnValidSubmit="Ingresar" class="login-form">
+            <div class="input-group">
+                <label>Usuario</label>
+                <InputText @bind-Value="_form.Usuario" placeholder="Ej: admin" />
+            </div>
+            
+            <div class="input-group">
+                <label>Contraseña</label>
+                <InputText type="password" @bind-Value="_form.Password" placeholder="••••••••" />
+            </div>
+            
+            @if (!string.IsNullOrEmpty(_error))
+            {
+                <p class="error-message">@_error</p>
+            }
+            
+            <button type="submit" class="btn-ingresar" disabled="@_procesando">
+                @(_procesando ? "Ingresando..." : "Ingresar al Sistema")
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginRequestDto _form = new();
+    private string? _error;
+    private bool _procesando;
+
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+
+    private async Task Ingresar()
+    {
+        _procesando = true;
+        _error = null;
+
+        var (exito, error) = await AuthService.LoginAsync(_form.Usuario, _form.Password);
+
+        if (!exito)
+        {
+            _error = error;
+            _procesando = false;
+            return;
+        }
+
+        Navigation.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/admin" : ReturnUrl);
+    }
+}

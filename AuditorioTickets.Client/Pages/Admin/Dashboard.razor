@@ -1,0 +1,350 @@
+@page "/admin"
+@attribute [Authorize(Roles = "Admin")]
+@inject EventoApiService EventoService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<PageTitle>Panel de administración - UNAJ</PageTitle>
+
+<div class="container-fluid py-4">
+    
+    <!-- Encabezado y botón de cerrar sesión -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0 text-dark">Panel de administración</h2>
+            <p class="text-muted mb-0">Gestión de eventos y control de ventas</p>
+        </div>
+        <button class="btn btn-outline-danger btn-sm shadow-sm rounded-pill px-4 fw-semibold" @onclick="CerrarSesion">
+            Cerrar sesión
+        </button>
+    </div>
+
+    <!-- TARJETA 1: FORMULARIO DE CREACIÓN -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4 px-md-5">
+            <h5 class="fw-bold text-primary mb-0">Crear nuevo evento</h5>
+        </div>
+        <div class="card-body p-4 p-md-5 pt-3">
+            <EditForm Model="_nuevoEvento" OnValidSubmit="CrearEvento">
+                <DataAnnotationsValidator />
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Título del evento</label>
+                        <InputText @bind-Value="_nuevoEvento.Titulo" class="form-control bg-light border-0" placeholder="Ej: Acto de Colación" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Lugar</label>
+                        <InputText @bind-Value="_nuevoEvento.Lugar" class="form-control bg-light border-0" placeholder="Ej: Auditorio Sede Central" />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">Descripción</label>
+                        <InputTextArea @bind-Value="_nuevoEvento.Descripcion" class="form-control bg-light border-0" rows="2" placeholder="Detalles del evento..." />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold text-secondary">Fecha y hora</label>
+                        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="_nuevoEvento.FechaEvento" class="form-control bg-light border-0" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold text-secondary">Capacidad máxima</label>
+                        <InputNumber @bind-Value="_nuevoEvento.CapacidadMaxima" class="form-control bg-light border-0" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold text-secondary">Precio (ARS)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 fw-bold">$</span>
+                            <InputNumber @bind-Value="_nuevoEvento.Precio" class="form-control bg-light border-0" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    @if (!string.IsNullOrEmpty(_errorCreacion))
+                    {
+                        <div class="alert alert-danger border-0 shadow-sm rounded-3 py-2">@_errorCreacion</div>
+                    }
+                    @if (_creado)
+                    {
+                        <div class="alert alert-success border-0 shadow-sm rounded-3 bg-success text-white py-2">
+                            ✅ Evento creado correctamente.
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm btn-guardar" disabled="@_creando">
+                        @if (_creando)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>Creando...</span>
+                        }
+                        else
+                        {
+                            <span>Crear evento</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- TARJETA 2: DASHBOARD DE VENTAS -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-3 px-4 px-md-5 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-primary mb-0">Dashboard de ventas</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (_cargandoDashboard)
+            {
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border spinner-border-sm mb-2" role="status"></div>
+                    <p class="mb-0">Cargando métricas...</p>
+                </div>
+            }
+            else if (!_eventos.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <p class="mb-0">No hay eventos registrados en el sistema.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive px-4 px-md-5 pb-4">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0 rounded-start">Evento</th>
+                                <th class="border-0">Fecha</th>
+                                <th class="border-0 text-center">Capacidad</th>
+                                <th class="border-0 text-center">Reservadas</th>
+                                <th class="border-0 text-center">Vendidas</th>
+                                <th class="border-0 text-center">Disponibles</th>
+                                <th class="border-0 text-center rounded-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-top-0">
+                            @foreach (var evento in _eventos)
+                            {
+                                <tr>
+                                    <td class="fw-semibold text-dark">@evento.Titulo</td>
+                                    <td class="text-muted">@evento.FechaEvento.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="text-center text-muted">@evento.CapacidadMaxima</td>
+                                    <td class="text-center fw-medium text-warning">@evento.EntradasReservadas</td>
+                                    <td class="text-center fw-medium text-primary">@evento.EntradasVendidas</td>
+                                    <td class="text-center fw-bold text-success">@evento.CupoDisponible</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill me-1" @onclick="() => AbrirModalEdicion(evento)" title="Editar">
+                                            ✏️
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger rounded-pill" @onclick="() => EliminarEvento(evento.Id, evento.Titulo)" title="Eliminar">
+                                            🗑️
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE EDICIÓN -->
+@if (_mostrarModalEdicion)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold text-primary">Editar evento</h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModalEdicion"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <EditForm Model="_eventoEditando" OnValidSubmit="GuardarEdicion">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small">Título</label>
+                                <InputText @bind-Value="_eventoEditando.Titulo" class="form-control bg-light border-0" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small">Lugar</label>
+                                <InputText @bind-Value="_eventoEditando.Lugar" class="form-control bg-light border-0" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-secondary small">Descripción</label>
+                                <InputTextArea @bind-Value="_eventoEditando.Descripcion" class="form-control bg-light border-0" rows="2" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary small">Fecha y hora</label>
+                                <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="_eventoEditando.FechaEvento" class="form-control bg-light border-0" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary small">Capacidad</label>
+                                <InputNumber @bind-Value="_eventoEditando.CapacidadMaxima" class="form-control bg-light border-0" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary small">Precio</label>
+                                <InputNumber @bind-Value="_eventoEditando.Precio" class="form-control bg-light border-0" />
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(_errorEdicion))
+                        {
+                            <div class="alert alert-danger mt-3 mb-0 py-2">@_errorEdicion</div>
+                        }
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-light rounded-pill px-4" @onclick="CerrarModalEdicion">Cancelar</button>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm btn-guardar" disabled="@_guardandoEdicion">
+                                @(_guardandoEdicion ? "Guardando..." : "Guardar cambios")
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private CrearEventoDto _nuevoEvento = new() { FechaEvento = DateTime.Now.AddDays(7) };
+    private List<EventoDto> _eventos = new();
+    
+    // Estados de creación y dashboard
+    private bool _cargandoDashboard = true, _creando, _creado;
+    private string? _errorCreacion;
+
+    // Estados de edición
+    private bool _mostrarModalEdicion = false;
+    private bool _guardandoEdicion = false;
+    private string? _errorEdicion;
+    private CrearEventoDto _eventoEditando = new();
+    private Guid _eventoEditandoId;
+
+    protected override async Task OnInitializedAsync() => await CargarDashboard();
+
+    private async Task CargarDashboard()
+    {
+        _cargandoDashboard = true;
+        _eventos = await EventoService.ObtenerDashboardAsync();
+        _cargandoDashboard = false;
+    }
+
+    private async Task CrearEvento()
+    {
+        _creando = true;
+        _errorCreacion = null;
+        _creado = false;
+
+        var (exito, error) = await EventoService.CrearEventoAsync(_nuevoEvento);
+
+        if (!exito)
+        {
+            _errorCreacion = error;
+        }
+        else
+        {
+            _creado = true;
+            _nuevoEvento = new CrearEventoDto { FechaEvento = DateTime.Now.AddDays(7) };
+            await CargarDashboard();
+        }
+
+        _creando = false;
+    }
+
+    // --- LÓGICA DE EDICIÓN ---
+    private void AbrirModalEdicion(EventoDto evento)
+    {
+        _eventoEditandoId = evento.Id;
+        _eventoEditando = new CrearEventoDto
+        {
+            Titulo = evento.Titulo,
+            Descripcion = evento.Descripcion,
+            Lugar = evento.Lugar,
+            FechaEvento = evento.FechaEvento,
+            CapacidadMaxima = evento.CapacidadMaxima,
+            Precio = evento.Precio
+        };
+        _errorEdicion = null;
+        _mostrarModalEdicion = true;
+    }
+
+    private void CerrarModalEdicion()
+    {
+        _mostrarModalEdicion = false;
+    }
+
+    private async Task GuardarEdicion()
+    {
+        _guardandoEdicion = true;
+        _errorEdicion = null;
+
+        var (exito, error) = await EventoService.ActualizarEventoAsync(_eventoEditandoId, _eventoEditando);
+
+        if (!exito)
+        {
+            _errorEdicion = error;
+        }
+        else
+        {
+            _mostrarModalEdicion = false;
+            await CargarDashboard();
+        }
+        _guardandoEdicion = false;
+    }
+
+    // --- LÓGICA DE ELIMINACIÓN ---
+    private async Task EliminarEvento(Guid id, string titulo)
+    {
+        bool confirmado = await JS.InvokeAsync<bool>("confirm", $"¿Estás seguro que querés eliminar permanentemente el evento '{titulo}'?");
+        
+        if (confirmado)
+        {
+            var (exito, error) = await EventoService.EliminarEventoAsync(id);
+            if (exito)
+            {
+                await CargarDashboard();
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", $"Error al eliminar: {error}");
+            }
+        }
+    }
+
+    private async Task CerrarSesion()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/admin/login");
+    }
+}
+
+<style>
+    /* Estilos extra para unificar el diseño */
+    .btn-guardar {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-guardar:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3) !important;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(42, 82, 152, 0.25);
+    }
+    
+    /* Efecto hover suave para las filas de la tabla */
+    .table-hover tbody tr:hover {
+        background-color: rgba(42, 82, 152, 0.03);
+    }
+</style>

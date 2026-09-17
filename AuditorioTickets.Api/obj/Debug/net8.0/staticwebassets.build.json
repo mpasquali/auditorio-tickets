@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "nAfyhaHJdsgMIDSgGXOT/LCFqtc5QzYHx5cFhaxk0Js=",
+  "Source": "AuditorioTickets.Api",
+  "BasePath": "_content/AuditorioTickets.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

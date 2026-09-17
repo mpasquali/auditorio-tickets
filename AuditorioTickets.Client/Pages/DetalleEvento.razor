@@ -1,0 +1,186 @@
+@page "/evento/{Id:guid}"
+@inject EventoApiService EventoService
+@inject BoletoApiService BoletoService
+@inject NavigationManager Navigation
+
+<PageTitle>@(_evento?.Titulo ?? "Detalle del evento")</PageTitle>
+
+@if (_cargando)
+{
+    <div class="d-flex justify-content-center align-items-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <span class="ms-3 text-muted fw-semibold">Cargando información del evento...</span>
+    </div>
+}
+else if (_evento is null)
+{
+    <div class="container text-center py-5 mt-5">
+        <h3 class="text-muted fw-bold">No encontramos este evento.</h3>
+        <p class="text-secondary">Es posible que haya sido eliminado o el enlace sea incorrecto.</p>
+        <a class="btn btn-outline-primary mt-3 rounded-pill px-4" href="/">← Volver a la cartelera</a>
+    </div>
+}
+else
+{
+    <div class="container py-5">
+        <div class="row g-5 align-items-center">
+            
+            <!-- COLUMNA IZQUIERDA: Información del Evento -->
+            <div class="col-lg-7">
+                <span class="badge bg-primary text-uppercase mb-3 px-3 py-2 rounded-pill shadow-sm">Próximo Evento</span>
+                <h1 class="display-4 fw-bold text-dark mb-3">@_evento.Titulo</h1>
+                <p class="lead text-secondary mb-5">@_evento.Descripcion</p>
+
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle p-3 me-3 text-primary fs-5">
+                            📍
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">Lugar</h6>
+                            <small class="text-muted">@_evento.Lugar</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle p-3 me-3 text-primary fs-5">
+                            📅
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">Fecha y Hora</h6>
+                            <small class="text-muted">@_evento.FechaEvento.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle p-3 me-3 text-primary fs-5">
+                            🎟️
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">Cupo Disponible</h6>
+                            <small class="text-muted">@_evento.CupoDisponible de @_evento.CapacidadMaxima lugares</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: Tarjeta de Checkout -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-white border-bottom p-4 text-center">
+                        <span class="text-muted small text-uppercase fw-semibold">Valor de la entrada</span>
+                        <h2 class="fw-bold text-dark mt-1 mb-0">$@_evento.Precio.ToString("N2")</h2>
+                    </div>
+                    
+                    <div class="card-body p-4 p-md-5 bg-light">
+                        @if (_evento.CupoDisponible <= 0)
+                        {
+                            <div class="alert alert-warning text-center border-0 shadow-sm rounded-3 mb-0 py-4">
+                                <h5 class="fw-bold mb-2">¡Entradas agotadas!</h5>
+                                <p class="mb-0 small">Lamentablemente ya no quedan lugares disponibles para este evento.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <EditForm Model="_formCompra" OnValidSubmit="ConfirmarCompra">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-secondary small">Nombre completo</label>
+                                    <InputText @bind-Value="_formCompra.CompradorNombre" class="form-control form-control-lg border-0 shadow-sm" placeholder="Ej: Juan Pérez" />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-secondary small">Correo electrónico</label>
+                                    <InputText @bind-Value="_formCompra.CompradorEmail" class="form-control form-control-lg border-0 shadow-sm" placeholder="juan@ejemplo.com" />
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(_error))
+                                {
+                                    <div class="alert alert-danger py-2 mb-4 border-0 shadow-sm rounded-3">@_error</div>
+                                }
+
+                                <button type="submit" class="btn w-100 py-3 shadow-sm btn-mercadopago d-flex justify-content-center align-items-center gap-2" disabled="@_procesando">
+                                    @if (_procesando)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="fw-bold">Generando pago...</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-bold">Pagar con MercadoPago</span>
+                                        <span>🤝</span>
+                                    }
+                                </button>
+                            </EditForm>
+                            <div class="text-center mt-3">
+                                <small class="text-muted" style="font-size: 0.75rem;">Pago 100% seguro y gestionado por MercadoPago</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private EventoDto? _evento;
+    private bool _cargando = true;
+    private bool _procesando;
+    private string? _error;
+    private IniciarCompraDto _formCompra = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _evento = await EventoService.ObtenerPorIdAsync(Id);
+        _formCompra.EventoId = Id;
+        _cargando = false;
+    }
+
+    private async Task ConfirmarCompra()
+    {
+        if (string.IsNullOrWhiteSpace(_formCompra.CompradorNombre) || string.IsNullOrWhiteSpace(_formCompra.CompradorEmail))
+        {
+            _error = "Por favor completá tu nombre y correo electrónico.";
+            return;
+        }
+
+        _procesando = true;
+        _error = null;
+
+        var (exito, datos, error) = await BoletoService.IniciarCompraAsync(_formCompra);
+
+        if (!exito || datos is null)
+        {
+            _error = error;
+            _procesando = false;
+            return;
+        }
+
+        // Redirige a la pantalla de pago de MercadoPago
+        Navigation.NavigateTo(datos.InitPoint, forceLoad: true);
+    }
+}
+
+<style>
+    /* Estilo específico para el botón de MercadoPago */
+    .btn-mercadopago {
+        background-color: #009EE3;
+        color: white;
+        border-radius: 0.75rem;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-mercadopago:hover:not(:disabled) {
+        background-color: #0084bd;
+        color: white;
+        transform: translateY(-2px);
+    }
+    .btn-mercadopago:disabled {
+        background-color: #7abfe1;
+        cursor: not-allowed;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(0, 158, 227, 0.25);
+    }
+</style>

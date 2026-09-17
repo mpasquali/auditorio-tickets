@@ -1,0 +1,63 @@
+@page "/compra/{Estado}/{BoletoId:guid}"
+@inject BoletoApiService BoletoService
+@implements IDisposable
+
+<PageTitle>Estado de tu compra</PageTitle>
+
+<div class="contenedor-resultado">
+    @if (_boleto is null)
+    {
+        <p>Buscando tu boleto...</p>
+    }
+    else if (_boleto.Estado == EstadoBoleto.Pagado)
+    {
+        <h2>✅ ¡Compra confirmada!</h2>
+        <p>Entrada para <strong>@_boleto.TituloEvento</strong></p>
+        <p>A nombre de: @_boleto.CompradorNombre (@_boleto.CompradorEmail)</p>
+
+        @if (!string.IsNullOrEmpty(_boleto.CodigoQrBase64))
+        {
+            <img src="data:image/png;base64,@_boleto.CodigoQrBase64" alt="QR de tu entrada" class="qr-entrada" />
+        }
+        <p>Te enviamos una copia por email. Presentá este QR en el ingreso.</p>
+    }
+    else if (_boleto.Estado == EstadoBoleto.PendientePago)
+    {
+        <h2>⏳ Estamos confirmando tu pago...</h2>
+        <p>Esto puede tardar unos segundos, no cierres esta página.</p>
+    }
+    else
+    {
+        <h2>❌ La compra no pudo completarse</h2>
+        <p>Estado: @_boleto.Estado</p>
+        <a href="/">Volver a los eventos</a>
+    }
+</div>
+
+@code {
+    [Parameter] public string Estado { get; set; } = string.Empty;
+    [Parameter] public Guid BoletoId { get; set; }
+
+    private BoletoDto? _boleto;
+    private System.Threading.Timer? _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConsultarBoleto();
+
+        // El webhook de MercadoPago puede llegar unos segundos después del redirect
+        // del usuario, así que se pollea el estado del boleto cada 3s mientras esté pendiente.
+        _timer = new System.Threading.Timer(async _ =>
+        {
+            if (_boleto?.Estado == EstadoBoleto.PendientePago)
+            {
+                await ConsultarBoleto();
+                await InvokeAsync(StateHasChanged);
+            }
+        }, null, 3000, 3000);
+    }
+
+    private async Task ConsultarBoleto() => _boleto = await BoletoService.ObtenerBoletoAsync(BoletoId);
+
+    public void Dispose() => _timer?.Dispose();
+}

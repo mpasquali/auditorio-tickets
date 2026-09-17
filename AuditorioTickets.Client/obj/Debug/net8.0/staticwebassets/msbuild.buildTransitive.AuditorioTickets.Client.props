@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/AuditorioTickets.Client.props" />
+</Project>
