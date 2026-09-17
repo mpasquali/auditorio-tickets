@@ -1,21 +1,22 @@
 {
   "mainAssemblyName": "AuditorioTickets.Client",
   "resources": {
-    "hash": "sha256-VGB4Y6xY77uwuS1OtL47vvr3uyBLVH/NdsxZ6tFtmc4=",
+    "hash": "sha256-leR+PQSj1/QuWpkjs7F0e0RnyNSERSkEjaLg5Hy4oJU=",
     "jsModuleNative": {
-      "dotnet.native.8.0.30.1f79eur87u.js": "sha256-dexsp+9ih2C28zVhNnPXUbkz2QCq7lHpkyDcmaLl7NQ="
+      "dotnet.native.js": "sha256-9Fzd5We95Rp03dEKIAbYjPDR3eWyLbmjMlYStvxyiok="
     },
     "jsModuleRuntime": {
-      "dotnet.runtime.8.0.30.vy6zmpc47g.js": "sha256-Iz92tEdLDz6hULg8toBVTeVi4QRnFEbFBy3lo3dbmEw="
+      "dotnet.runtime.js": "sha256-aLf0XK8bqX83FXyXydFPTC1FOTq3PaeGDyoDn3uz194="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-u1TlK1IA8S0kJgWTC6wzigrzwKe2XeA6BKUgMGM2UBQ="
+      "dotnet.native.wasm": "sha256-Y1pDEFNAqpzUmFk5FuVUzruqNloBnByUMhlQ96dqto4="
     },
     "icu": {
       "icudt_CJK.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
       "icudt_EFIGS.dat": "sha256-8fItetYY8kQ0ww6oxwTLiT3oXlBwHKumbeP2pRF4yTc=",
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
+    "coreAssembly": {},
     "assembly": {
       "Blazored.LocalStorage.wasm": "sha256-OaMAAd5n7ORfyur5e3QIyEVKJ76MKIvwbg7/icnnYcU=",
       "Microsoft.AspNetCore.Authorization.wasm": "sha256-kNA4LdCjpjYaNwuaPjXH5rkLdQCQheCHKBRCg12PObE=",
@@ -214,12 +215,12 @@
       "mscorlib.wasm": "sha256-pP80UGziulDYhvVdeUaGEq9FlrHQDQmnCqVvx1FJZis=",
       "netstandard.wasm": "sha256-ARMsMyhWuSDjvzisfZbnEptnxh8Vh7VpHPhuT6iazy0=",
       "System.Private.CoreLib.wasm": "sha256-+28m4yuZsdz9ij1sJHvNH896fSI8gXgrQ9bhGO76Qqo=",
-      "AuditorioTickets.Shared.wasm": "sha256-oQhPhRs+1QoseB1Mc0mwYp3KJHNsSi1m1trv1ebs0m8=",
-      "AuditorioTickets.Client.wasm": "sha256-Y+opZXlZz288RN3eFJBMSXUPnBtF6E/vx4oY6eXw/Ow="
+      "AuditorioTickets.Shared.wasm": "sha256-mwsrPgFsCieiyOY5Y40HLV6W64PrfrVXal88kzyALMY=",
+      "AuditorioTickets.Client.wasm": "sha256-kkEwVumzrOaFxoHz1xwWiqnzFz6WlnlSfJWAq8HqTCI="
     },
     "pdb": {
-      "AuditorioTickets.Shared.pdb": "sha256-oy1/6malPA6lwlWiUKngSBIfczVFT1h+xMWk1IJB7ss=",
-      "AuditorioTickets.Client.pdb": "sha256-8jZj6trd9Op8XYSg2s0Eyo+Hdg1B8vgx6DuFAMctwco="
+      "AuditorioTickets.Shared.pdb": "sha256-1BgCWstEaGgdKGe8RY9d+KOTNuWWVEnBTXChRyYbbSQ=",
+      "AuditorioTickets.Client.pdb": "sha256-kN7q98CYGEfpclGSjXe+pBlDDKd+lVFj6jpsNIwier8="
     }
   },
   "cacheBootResources": true,

@@ -10,3 +10,15 @@
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/AuditorioTickets.Shared.pdb
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/ref/AuditorioTickets.Shared.dll
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/Debug/net8.0/AuditorioTickets.Shared.sourcelink.json
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\bin\Debug\net8.0\AuditorioTickets.Shared.deps.json
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\bin\Debug\net8.0\AuditorioTickets.Shared.dll
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\bin\Debug\net8.0\AuditorioTickets.Shared.pdb
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\AuditorioTickets.Shared.GeneratedMSBuildEditorConfig.editorconfig
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\AuditorioTickets.Shared.AssemblyInfoInputs.cache
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\AuditorioTickets.Shared.AssemblyInfo.cs
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\AuditorioTickets.Shared.csproj.CoreCompileInputs.cache
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\AuditorioTickets.Shared.sourcelink.json
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\AuditorioTickets.Shared.dll
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\refint\AuditorioTickets.Shared.dll
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\AuditorioTickets.Shared.pdb
+E:\Proyectos Unaj\auditorio-tickets\AuditorioTickets.Shared\obj\Debug\net8.0\ref\AuditorioTickets.Shared.dll

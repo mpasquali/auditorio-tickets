@@ -1,33 +1,39 @@
 {
   "format": 1,
   "restore": {
-    "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/AuditorioTickets.Client.csproj": {}
+    "E:\\Proyectos Unaj\\auditorio-tickets\\auditoriotickets.client\\AuditorioTickets.Client.csproj": {}
   },
   "projects": {
-    "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/AuditorioTickets.Client.csproj": {
+    "E:\\Proyectos Unaj\\auditorio-tickets\\auditoriotickets.client\\AuditorioTickets.Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/AuditorioTickets.Client.csproj",
+        "projectUniqueName": "E:\\Proyectos Unaj\\auditorio-tickets\\auditoriotickets.client\\AuditorioTickets.Client.csproj",
         "projectName": "AuditorioTickets.Client",
-        "projectPath": "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/AuditorioTickets.Client.csproj",
-        "packagesPath": "/Users/matiaspasquali/.nuget/packages/",
-        "outputPath": "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/obj/",
+        "projectPath": "E:\\Proyectos Unaj\\auditorio-tickets\\auditoriotickets.client\\AuditorioTickets.Client.csproj",
+        "packagesPath": "C:\\Users\\Mati\\.nuget\\packages\\",
+        "outputPath": "E:\\Proyectos Unaj\\auditorio-tickets\\auditoriotickets.client\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/Users/matiaspasquali/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Mati\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/AuditorioTickets.Shared.csproj": {
-                "projectPath": "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/AuditorioTickets.Shared.csproj"
+              "E:\\Proyectos Unaj\\auditorio-tickets\\AuditorioTickets.Shared\\AuditorioTickets.Shared.csproj": {
+                "projectPath": "E:\\Proyectos Unaj\\auditorio-tickets\\AuditorioTickets.Shared\\AuditorioTickets.Shared.csproj"
               }
             }
           }
@@ -41,7 +47,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -75,13 +82,13 @@
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.30, )",
+              "version": "[8.0.21, )",
               "autoReferenced": true
             },
             "Microsoft.NET.Sdk.WebAssembly.Pack": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.30, )",
+              "version": "[9.0.10, )",
               "autoReferenced": true
             }
           },
@@ -99,7 +106,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
-              "version": "[8.0.30, 8.0.30]"
+              "version": "[8.0.21, 8.0.21]"
             }
           ],
           "frameworkReferences": {
@@ -107,7 +114,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.424/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
@@ -116,22 +123,28 @@
         }
       }
     },
-    "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/AuditorioTickets.Shared.csproj": {
+    "E:\\Proyectos Unaj\\auditorio-tickets\\AuditorioTickets.Shared\\AuditorioTickets.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/AuditorioTickets.Shared.csproj",
+        "projectUniqueName": "E:\\Proyectos Unaj\\auditorio-tickets\\AuditorioTickets.Shared\\AuditorioTickets.Shared.csproj",
         "projectName": "AuditorioTickets.Shared",
-        "projectPath": "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/AuditorioTickets.Shared.csproj",
-        "packagesPath": "/Users/matiaspasquali/.nuget/packages/",
-        "outputPath": "/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Shared/obj/",
+        "projectPath": "E:\\Proyectos Unaj\\auditorio-tickets\\AuditorioTickets.Shared\\AuditorioTickets.Shared.csproj",
+        "packagesPath": "C:\\Users\\Mati\\.nuget\\packages\\",
+        "outputPath": "E:\\Proyectos Unaj\\auditorio-tickets\\AuditorioTickets.Shared\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/Users/matiaspasquali/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Mati\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -149,7 +162,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -170,7 +184,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.424/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
