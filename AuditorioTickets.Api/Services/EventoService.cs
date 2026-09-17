@@ -99,9 +99,10 @@ public class EventoService : IEventoService
         return false;
     }
 
-    public async Task LiberarCupoAsync(Guid eventoId)
+    public async Task LiberarCupoAsync(Guid eventoId, int cantidad = 1)
     {
-        // Se usa si el pago se cancela/expira: libera el cupo reservado sin tocar EntradasVendidas.
+        if (cantidad <= 0) return;
+
         for (int intento = 0; intento < MaxReintentos; intento++)
         {
             try
@@ -109,21 +110,27 @@ public class EventoService : IEventoService
                 var evento = await _context.Eventos.FirstOrDefaultAsync(e => e.Id == eventoId);
                 if (evento is null) return;
 
-                if (evento.EntradasReservadas > 0) 
-                    evento.EntradasReservadas -= 1;
-                
-                evento.ConcurrencyStamp = Guid.NewGuid(); 
-                await _context.SaveChangesAsync();
+                // Math.Max evita que un bug o una doble ejecución deje el contador en negativo.
+                evento.EntradasReservadas = Math.Max(0, evento.EntradasReservadas - cantidad);
+                evento.ConcurrencyStamp = Guid.NewGuid();
 
+                await _context.SaveChangesAsync();
                 return;
             }
             catch (DbUpdateConcurrencyException)
             {
                 foreach (var entry in _context.ChangeTracker.Entries())
                     entry.State = EntityState.Detached;
+
+                _logger.LogWarning("Conflicto liberando {Cantidad} cupo(s) del evento {EventoId}, reintento {Intento}",
+                    cantidad, eventoId, intento + 1);
+
                 await Task.Delay(50 * (intento + 1));
             }
         }
+
+        _logger.LogError("No se pudieron liberar {Cantidad} cupo(s) del evento {EventoId} tras {Max} reintentos",
+            cantidad, eventoId, MaxReintentos);
     }
 
     public async Task ConfirmarVentaAsync(Guid eventoId)

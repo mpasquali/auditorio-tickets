@@ -16,7 +16,7 @@ public class WebhookController : ControllerBase
     private readonly IMercadoPagoService _mercadoPago;
     private readonly IEventoService _eventoService;
     private readonly IQrService _qrService;
-    private readonly IEmailService _emailService; // <--- Inyectamos el servicio de correo real
+    private readonly IEmailService _emailService;
     private readonly ILogger<WebhookController> _logger;
     private readonly string? _webhookSecret;
 
@@ -25,7 +25,7 @@ public class WebhookController : ControllerBase
         IMercadoPagoService mercadoPago,
         IEventoService eventoService,
         IQrService qrService,
-        IEmailService emailService, // <--- Lo recibimos en el constructor
+        IEmailService emailService,
         IConfiguration config,
         ILogger<WebhookController> logger)
     {
@@ -45,12 +45,11 @@ public class WebhookController : ControllerBase
         [FromQuery(Name = "data.id")] string? dataId,
         [FromQuery(Name = "id")] string? idLegacy)
     {
-        // MercadoPago tiene dos formatos históricos de notificación; contemplamos ambos.
         var esNotificacionDePago = (type ?? topic) == "payment";
         var paymentId = dataId ?? idLegacy;
 
         if (!esNotificacionDePago || string.IsNullOrEmpty(paymentId))
-            return Ok(); // Respondemos 200 igual para que MP no siga reintentando algo que no nos interesa.
+            return Ok();
 
         if (!ValidarFirmaWebhook(Request, paymentId))
         {
@@ -77,11 +76,31 @@ public class WebhookController : ControllerBase
                 return Ok();
             }
 
-            // Idempotencia: si ya está pagado, no reprocesamos (MP puede reenviar el mismo evento).
+            // Idempotencia: si ya está pagado, no reprocesamos
             if (boleto.Estado == EstadoBoleto.Pagado)
                 return Ok();
 
             boleto.MercadoPagoPaymentId = mpPaymentId;
+
+            // El job de expiración pudo haber vencido este boleto mientras el usuario pagaba.
+            // Si el pago se aprobó igual, intentamos recuperar el cupo y revivir el boleto.
+            if (boleto.Estado == EstadoBoleto.Expirado && status == "approved")
+            {
+                var recuperoCupo = await _eventoService.IntentarReservarCupoAsync(boleto.EventoId);
+
+                if (!recuperoCupo)
+                {
+                    _logger.LogCritical(
+                        "⚠️ Pago {PaymentId} APROBADO para el boleto expirado {BoletoId} del evento {EventoId}, " +
+                        "pero el evento ya está completo. REQUIERE REEMBOLSO MANUAL a {Email}.",
+                        mpPaymentId, boleto.Id, boleto.EventoId, boleto.CompradorEmail);
+
+                    await _context.SaveChangesAsync();
+                    return Ok(); // 200 para que MP no siga reintentando; el caso queda para resolución manual.
+                }
+
+                boleto.Estado = EstadoBoleto.PendientePago; // reactivado, sigue el flujo normal de abajo
+            }
 
             if (status == "approved")
             {
@@ -91,15 +110,14 @@ public class WebhookController : ControllerBase
 
                 await _context.SaveChangesAsync();
 
-                // Suma +1 a EntradasVendidas (contador separado de la reserva de cupo).
+                // Suma +1 a EntradasVendidas
                 await _eventoService.ConfirmarVentaAsync(boleto.EventoId);
 
-                // 🔥 ENVÍO REAL DEL CORREO: Dispara el envío SMTP con el QR adjunto al comprador
                 try
                 {
                     await _emailService.EnviarEntradaAsync(
                         emailDestino: boleto.CompradorEmail,
-                        nombreComprador: boleto.CompradorNombre, // Ajustá esta propiedad si en tu modelo se llama distinto (ej: NombreComprador)
+                        nombreComprador: boleto.CompradorNombre,
                         tituloEvento: boleto.Evento.Titulo,
                         boletoId: boleto.Id
                     );
@@ -108,7 +126,6 @@ public class WebhookController : ControllerBase
                 }
                 catch (Exception mailEx)
                 {
-                    // Registramos el error de correo pero no rompemos el flujo del webhook para que MP no repita la notificación si el pago ya se aprobó
                     _logger.LogError(mailEx, "Error al enviar el email de confirmación para el boleto {BoletoId}", boleto.Id);
                 }
             }
@@ -116,11 +133,10 @@ public class WebhookController : ControllerBase
             {
                 boleto.Estado = EstadoBoleto.Cancelado;
                 await _context.SaveChangesAsync();
-                await _eventoService.LiberarCupoAsync(boleto.EventoId); // libera el cupo reservado
+                await _eventoService.LiberarCupoAsync(boleto.EventoId);
             }
             else
             {
-                // "pending", "in_process", etc. — no hacemos nada más, esperamos la próxima notificación.
                 await _context.SaveChangesAsync();
             }
 
@@ -129,16 +145,10 @@ public class WebhookController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error procesando webhook de payment {PaymentId}", paymentId);
-            // Devolvemos 500 a propósito: así MercadoPago reintenta la notificación más tarde.
             return StatusCode(500);
         }
     }
 
-    /// <summary>
-    /// Valida el header x-signature según el algoritmo documentado por MercadoPago
-    /// (HMAC-SHA256 sobre un manifest con id + request-id + timestamp).
-    /// Si no hay secreto configurado, se omite (solo recomendado en desarrollo local).
-    /// </summary>
     private bool ValidarFirmaWebhook(HttpRequest request, string dataId)
     {
         if (string.IsNullOrEmpty(_webhookSecret))

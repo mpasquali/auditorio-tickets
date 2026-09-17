@@ -33,9 +33,8 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasIndex(b => b.MercadoPagoPreferenceId);
             entity.HasIndex(b => b.MercadoPagoPaymentId);
-            entity.Property(b => b.Estado)
-                  .HasConversion<string>() // guarda el enum como texto legible en la BD
-                  .HasMaxLength(30);
+            entity.HasIndex(b => new { b.Estado, b.FechaCreacion });  // 👈 nuevo, para el barrido
+            entity.Property(b => b.Estado).HasConversion<string>().HasMaxLength(30);
         });
 
         // Seed opcional para pruebas rápidas

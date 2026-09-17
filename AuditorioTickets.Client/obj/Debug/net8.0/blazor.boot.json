@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "AuditorioTickets.Client",
   "resources": {
-    "hash": "sha256-dPczA3vZtq06SX2h1cFQKjj8svZPjmdS311n3PGYihg=",
+    "hash": "sha256-VGB4Y6xY77uwuS1OtL47vvr3uyBLVH/NdsxZ6tFtmc4=",
     "jsModuleNative": {
       "dotnet.native.8.0.30.1f79eur87u.js": "sha256-dexsp+9ih2C28zVhNnPXUbkz2QCq7lHpkyDcmaLl7NQ="
     },
@@ -214,12 +214,12 @@
       "mscorlib.wasm": "sha256-pP80UGziulDYhvVdeUaGEq9FlrHQDQmnCqVvx1FJZis=",
       "netstandard.wasm": "sha256-ARMsMyhWuSDjvzisfZbnEptnxh8Vh7VpHPhuT6iazy0=",
       "System.Private.CoreLib.wasm": "sha256-+28m4yuZsdz9ij1sJHvNH896fSI8gXgrQ9bhGO76Qqo=",
-      "AuditorioTickets.Shared.wasm": "sha256-Re+45WqCeVAiBYWwgQZiBdmXC5HmNu4S12j1kMwDU8g=",
-      "AuditorioTickets.Client.wasm": "sha256-kvb+yNupLvsrcfRFvX+gUa3aqSy7FlvBq5COoUYI420="
+      "AuditorioTickets.Shared.wasm": "sha256-oQhPhRs+1QoseB1Mc0mwYp3KJHNsSi1m1trv1ebs0m8=",
+      "AuditorioTickets.Client.wasm": "sha256-Y+opZXlZz288RN3eFJBMSXUPnBtF6E/vx4oY6eXw/Ow="
     },
     "pdb": {
-      "AuditorioTickets.Shared.pdb": "sha256-TZslzcmK60GGH/MCtF6dCTx4vcmR9QpDqs9tET3G/w8=",
-      "AuditorioTickets.Client.pdb": "sha256-SHzTfLevRzPD7qwo9gfwpFf8tahLF4ZuZF8DstBNoRw="
+      "AuditorioTickets.Shared.pdb": "sha256-oy1/6malPA6lwlWiUKngSBIfczVFT1h+xMWk1IJB7ss=",
+      "AuditorioTickets.Client.pdb": "sha256-8jZj6trd9Op8XYSg2s0Eyo+Hdg1B8vgx6DuFAMctwco="
     }
   },
   "cacheBootResources": true,

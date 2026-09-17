@@ -16,6 +16,6 @@ public interface IEventoService
     /// </summary>
     Task<bool> IntentarReservarCupoAsync(Guid eventoId);
 
-    Task LiberarCupoAsync(Guid eventoId);
+    Task LiberarCupoAsync(Guid eventoId, int cantidad = 1);
     Task ConfirmarVentaAsync(Guid eventoId);
 }

@@ -1068,3 +1068,4 @@
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/obj/Debug/net8.0/refint/AuditorioTickets.Client.dll
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/obj/Debug/net8.0/AuditorioTickets.Client.pdb
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/obj/Debug/net8.0/ref/AuditorioTickets.Client.dll
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Client/obj/Debug/net8.0/AuditorioTickets.Client.sourcelink.json

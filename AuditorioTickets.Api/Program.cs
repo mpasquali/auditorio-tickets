@@ -5,6 +5,8 @@ using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using AuditorioTickets.Api.BackgroundServices;
+using AuditorioTickets.Api.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,8 @@ builder.Services.AddScoped<IEventoService, EventoService>();
 builder.Services.AddScoped<IMercadoPagoService, MercadoPagoService>();
 builder.Services.AddScoped<IQrService, QrService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.Configure<ExpiracionBoletosOptions>(builder.Configuration.GetSection("ExpiracionBoletos"));
+builder.Services.AddHostedService<ExpiracionBoletosService>();
 
 // --- CORS ---
 builder.Services.AddCors(options =>

@@ -149,3 +149,4 @@
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Api/obj/Debug/net8.0/AuditorioTickets.Api.pdb
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Api/obj/Debug/net8.0/AuditorioTickets.Api.genruntimeconfig.cache
 /Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Api/obj/Debug/net8.0/ref/AuditorioTickets.Api.dll
+/Users/matiaspasquali/Documents/SistemaAuditorio/AuditorioTickets.Api/obj/Debug/net8.0/AuditorioTickets.Api.sourcelink.json
