@@ -10,7 +10,8 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "https://localhost:5219";
+// Cambiado para que apunte directamente a tu API en Render si no encuentra la variable de configuración
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "https://tu-api-en-render.onrender.com";
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<AuthorizedHttpMessageHandler>();
