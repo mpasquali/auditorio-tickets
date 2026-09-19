@@ -1,12 +1,12 @@
 using System.Text;
+using AuditorioTickets.Api.BackgroundServices;
+using AuditorioTickets.Api.Configuration;
 using AuditorioTickets.Api.Data;
 using AuditorioTickets.Api.Services;
 using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using AuditorioTickets.Api.BackgroundServices;
-using AuditorioTickets.Api.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,30 +22,34 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<ExpiracionBoletosOptions>(builder.Configuration.GetSection("ExpiracionBoletos"));
 builder.Services.AddHostedService<ExpiracionBoletosService>();
 
-// --- CORS ---
+// --- CORS unificado ---
+const string CorsPolicy = "AllowAppOrigins";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("PermitirFrontend", policy =>
+    options.AddPolicy(CorsPolicy, policy =>
     {
-        policy.WithOrigins("http://localhost:5289") // La URL exacta de tu Blazor
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        var frontendUrl = builder.Configuration["MercadoPago:FrontendBaseUrl"];
+
+        var origins = new List<string>
+        {
+            "http://localhost:5289",
+            "https://localhost:7198",
+            "https://auditorio-tickets-1.onrender.com"
+        };
+
+        if (!string.IsNullOrWhiteSpace(frontendUrl))
+        {
+            origins.Add(frontendUrl.TrimEnd('/'));
+        }
+
+        policy.WithOrigins(origins.ToArray())
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
 // --- MercadoPago SDK ---
 MercadoPagoConfig.AccessToken = builder.Configuration["MercadoPago:AccessToken"];
-
-// --- CORS para el cliente Blazor WASM ---
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowBlazorClient", policy =>
-    {
-        policy.WithOrigins(builder.Configuration["MercadoPago:FrontendBaseUrl"]!)
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
 
 // --- Autenticación JWT ---
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -72,8 +76,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Aplica migraciones automáticamente al iniciar (cómodo para el MVP; en producción
-// preferí ejecutar `dotnet ef database update` como paso de deploy explícito).
+// Aplicar migraciones pendientes
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -87,7 +90,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("PermitirFrontend");
+
+// CORS debe ejecutarse antes de Authentication y Authorization
+app.UseCors(CorsPolicy);
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
