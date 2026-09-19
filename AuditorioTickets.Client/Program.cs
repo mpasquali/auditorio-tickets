@@ -10,8 +10,16 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// URL configurada directamente apuntando a tu API desplegada en Render
-var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "https://auditorio-tickets-1.onrender.com";
+// En desarrollo usa appsettings.json local; en producción en Render fuerza la URL de la API
+string apiBaseUrl = builder.HostEnvironment.IsDevelopment()
+    ? (builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5219/")
+    : "https://auditorio-tickets.onrender.com/";
+
+// Asegurar que siempre termine en '/' para que HttpClient resuelva bien las rutas relativas
+if (!apiBaseUrl.EndsWith("/"))
+{
+    apiBaseUrl += "/";
+}
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<AuthorizedHttpMessageHandler>();
@@ -20,7 +28,7 @@ builder.Services
     .AddHttpClient("Api", client => client.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<AuthorizedHttpMessageHandler>();
 
-// Cualquier componente que inyecte HttpClient recibe el cliente "Api" ya configurado.
+// Cualquier componente o servicio que inyecte HttpClient recibe el cliente configurado
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Api"));
 
 builder.Services.AddAuthorizationCore();
